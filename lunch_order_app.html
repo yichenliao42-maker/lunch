@@ -1,46 +1,14 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-<title>系統除錯中</title>
-<style>
-  body { background: #EFE7D8; font-family: sans-serif; padding: 40px; text-align: center; color: #333; }
-  .error-box { background: #fff; padding: 20px; border: 2px solid red; border-radius: 10px; color: red; }
-</style>
+    <meta charset="UTF-8">
+    <title>測試頁</title>
 </head>
-<body>
-<div id="debug">正在啟動...</div>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-  const dbg = (msg) => document.getElementById('debug').innerHTML += `<p>${msg}</p>`;
-
-  try {
-    const config = {
-      apiKey: "AIzaSyB5Z7SgMVWwR5R3NOyLmuMZQIl1aIcpI4g",
-      authDomain: "school-lunch-9c02b.firebaseapp.com",
-      projectId: "school-lunch-9c02b",
-      storageBucket: "school-lunch-9c02b.firebasestorage.app",
-      messagingSenderId: "541983056692",
-      appId: "1:541983056692:web:1b3fa7647ef9b521e4fb61"
-    };
-
-    dbg("正在初始化 Firebase...");
-    const app = initializeApp(config);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    dbg("正在進行匿名登入...");
-    await signInAnonymously(auth);
-    dbg("✅ 登入成功！");
-
-  } catch (e) {
-    dbg(`<div class="error-box">錯誤: ${e.message}</div>`);
-  }
-</script>
+<body style="padding: 50px; font-size: 30px; font-family: sans-serif;">
+    <h1>✅ 檔案已成功更新！</h1>
+    <p>如果看到這行字，代表檔案已經上傳成功。</p>
+    <script>
+        console.log("程式正在執行...");
+    </script>
 </body>
 </html>
