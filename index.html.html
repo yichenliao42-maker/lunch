@@ -1,0 +1,146 @@
+<! html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>班級訂餐系統 - 登入</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#F59E0B', // 琥珀黃 (Amber-500)
+                        'primary-dark': '#D97706', // Amber-600
+                        'primary-light': '#FDE68A', // Amber-200
+                        ink: '#1E293B',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #F8FAFC; 
+            color: #1E293B; 
+        }
+        
+        .blob-bg {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, rgba(255,255,255,0) 70%);
+            top: -100px;
+            left: -100px;
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+
+    <div class="blob-bg"></div>
+    <div class="blob-bg" style="top: auto; bottom: -200px; left: auto; right: -200px; background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, rgba(255,255,255,0) 70%);"></div>
+
+    <main class="w-full max-w-6xl flex flex-col lg:flex-row gap-8 lg:gap-12 items-center justify-center">
+
+        <!-- 左側：視覺與介紹 -->
+        <div class="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left z-10 px-4 sm:px-6 lg:pr-16">
+            
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-gray-100 text-sm font-bold text-primary mb-6">
+                <i class="ph-fill ph-sparkle"></i> 告別傳統紙本傳閱
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-ink mb-4 sm:mb-6 leading-tight tracking-tight">
+                班級訂餐系統
+            </h1>
+            <p class="text-gray-500 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10 max-w-md mx-auto lg:mx-0">
+                專為學校班級設計。輕鬆上傳今日菜單，同學一鍵完成登記。系統自動加總數量、統計收費名單，訂便當不再手忙腳亂。
+            </p>
+
+            <!-- 核心功能小圖示列 -->
+            <div class="flex flex-wrap justify-center lg:justify-start gap-4 sm:gap-6 mb-8 lg:mb-12">
+                <div class="flex flex-col items-center lg:items-start gap-2">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary text-xl sm:text-2xl">
+                        <i class="ph ph-list-numbers"></i>
+                    </div>
+                    <span class="text-xs sm:text-sm font-bold text-gray-700">自動統計</span>
+                </div>
+                <div class="flex flex-col items-center lg:items-start gap-2">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary text-xl sm:text-2xl">
+                        <i class="ph ph-users-three"></i>
+                    </div>
+                    <span class="text-xs sm:text-sm font-bold text-gray-700">多人連線</span>
+                </div>
+                <div class="flex flex-col items-center lg:items-start gap-2">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary text-xl sm:text-2xl">
+                        <i class="ph ph-check-square-offset"></i>
+                    </div>
+                    <span class="text-xs sm:text-sm font-bold text-gray-700">收費打勾</span>
+                </div>
+            </div>
+            
+            <div class="hidden lg:block text-sm text-gray-400">
+                &copy; 2026 Class Lunch System.
+            </div>
+        </div>
+
+        <div class="w-full lg:w-1/2 max-w-md z-10">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 relative">
+                
+                <!-- 替換為你的圖片，設定最大寬度適應手機 -->
+                <div class="w-full max-w-[280px] sm:max-w-[320px] mx-auto aspect-square relative mb-6 flex justify-center animate-float">
+                    <img src="ChatGPT Image 2026年7月14日 上午10_19_59.png" alt="訂餐統計插畫" class="w-full h-full object-contain drop-shadow-xl" onerror="this.src='https://placehold.co/400x400/FDE68A/D97706?text=Image+Not+Found'">
+                </div>
+
+                <div class="text-center">
+                    <h3 class="text-xl sm:text-2xl font-black text-gray-800 mb-2">準備好開始揪團了嗎？</h3>
+                    <p class="text-gray-500 text-xs sm:text-sm mb-6 sm:mb-8 px-2">點擊下方按鈕，將自動透過 LINE 驗證您的身分以確保登記正確。</p>
+
+                    <!-- 主要動作按鈕，適應觸控高度 -->
+                    <button onclick="loginWithLine()" class="w-full min-h-[56px] bg-primary hover:bg-primary-dark text-white font-bold text-base sm:text-lg py-3 sm:py-4 rounded-2xl shadow-lg shadow-primary/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3">
+                        <i class="ph-fill ph-chat-circle text-xl sm:text-2xl"></i>
+                        使用 LINE 進入系統
+                    </button>
+                    
+                    <div class="mt-4 sm:mt-6 flex items-center justify-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-gray-400 font-medium">
+                        <i class="ph-fill ph-lock-key"></i> 僅讀取您的顯示名稱，不涉及隱私資料
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="block lg:hidden text-xs text-gray-400 mt-4 text-center w-full">
+            &copy; 2026 Class Lunch System.
+        </div>
+
+    </main>
+
+    <script>
+        function loginWithLine() {
+            // 自動跳轉至午餐系統 (預設帶入 101班 參數，可自行修改)
+            window.location.href = 'lunch_order_app.html?c=101';
+        }
+    </script>
+</body>
+</html>
