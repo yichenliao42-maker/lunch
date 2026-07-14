@@ -1,14 +1,141 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <title>測試頁</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>班級訂餐系統</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+  :root { --bg: #F8FAFC; --ink: #1E293B; --primary: #F59E0B; }
+  body { font-family: 'Noto Sans TC', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding: 20px; }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  .btn { transition: all 0.2s; }
+  .btn:active { transform: scale(0.98); }
+  .spinner { width: 30px; height: 30px; border: 3px solid #e2e8f0; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
 </head>
-<body style="padding: 50px; font-size: 30px; font-family: sans-serif;">
-    <h1>✅ 檔案已成功更新！</h1>
-    <p>如果看到這行字，代表檔案已經上傳成功。</p>
-    <script>
-        console.log("程式正在執行...");
-    </script>
+<body>
+
+<div class="wrap" id="wrap">
+  <div class="flex flex-col items-center justify-center pt-20">
+    <div class="spinner mb-4"></div>
+    <div class="text-gray-500 font-bold">系統啟動中...</div>
+  </div>
+</div>
+
+<datalist id="menuList"></datalist>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+  import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+  // ========================================================
+  // ⚠️ 請在此處貼上你的 Firebase Config (務必包含大括號)
+  // ========================================================
+  const REAL_FIREBASE_CONFIG = {
+    // 例如: apiKey: "AIza...", authDomain: "...", ...
+  };
+  // ========================================================
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const classId = urlParams.get('c') || 'default';
+  const appId = `class-${classId}`;
+  
+  let auth, db, currentUser;
+  let state = { date: new Date().toISOString().split('T')[0], orders: [] };
+
+  try {
+    const app = initializeApp(REAL_FIREBASE_CONFIG);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    await signInAnonymously(auth);
+    currentUser = auth.currentUser;
+    
+    // 初始化監聽
+    const ordersColl = collection(db, 'artifacts', appId, 'public', 'data', `orders_${state.date}`);
+    onSnapshot(ordersColl, (snapshot) => {
+      state.orders = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderRoleSelection();
+    });
+  } catch (e) {
+    document.getElementById('wrap').innerHTML = `<div class="p-6 bg-red-100 rounded-xl text-red-700 font-bold">初始化失敗，請檢查 Firebase Config 設定: ${e.message}</div>`;
+  }
+
+  function renderRoleSelection() {
+    document.getElementById('wrap').innerHTML = `
+      <div class="text-center pt-10">
+        <h1 class="text-3xl font-black mb-8">請選擇身分</h1>
+        <button id="roleStudent" class="w-full p-6 mb-4 bg-white rounded-2xl shadow-lg border-2 border-yellow-400 font-bold">👦 我是同學（個人登記）</button>
+        <button id="roleLeader" class="w-full p-6 mb-4 bg-white rounded-2xl shadow-lg border-2 border-orange-500 font-bold">🙋 我是訂便當的人</button>
+      </div>
+    `;
+    document.getElementById('roleStudent').onclick = () => renderStudentUI();
+    document.getElementById('roleLeader').onclick = () => renderLeaderUI();
+  }
+
+  function renderStudentUI() {
+    document.getElementById('wrap').innerHTML = `
+      <div class="mb-6">
+        <h2 class="text-2xl font-black mb-2">登記我的午餐</h2>
+        <input id="stuName" class="w-full p-3 mb-3 border rounded-xl" placeholder="請輸入姓名" />
+        <input id="stuItem" list="menuList" class="w-full p-3 mb-3 border rounded-xl" placeholder="品項名稱" />
+        <input id="stuPrice" type="number" class="w-full p-3 mb-3 border rounded-xl" placeholder="單價 (必填)" />
+        <input id="stuQty" type="number" value="1" class="w-full p-3 mb-4 border rounded-xl" placeholder="份數" />
+        <button id="submitBtn" class="w-full p-4 bg-yellow-500 text-white font-bold rounded-xl">確認送出</button>
+      </div>
+    `;
+    document.getElementById('submitBtn').onclick = async () => {
+      const name = document.getElementById('stuName').value;
+      const item = document.getElementById('stuItem').value;
+      const price = document.getElementById('stuPrice').value;
+      const qty = document.getElementById('stuQty').value;
+      if(!name || !item || !price) { alert("請填寫完整資訊！"); return; }
+      
+      await setDoc(doc(collection(db, 'artifacts', appId, 'public', 'data', `orders_${state.date}`)), {
+        name, item, price: Number(price), qty: Number(qty), paid: false, userId: currentUser.uid, time: Date.now()
+      });
+      alert("登記成功！");
+    };
+  }
+
+  function renderLeaderUI() {
+    const summary = {};
+    state.orders.forEach(o => {
+      if(!summary[o.item]) summary[o.item] = { qty: 0, total: 0 };
+      summary[o.item].qty += o.qty;
+      summary[o.item].total += (o.qty * o.price);
+    });
+
+    document.getElementById('wrap').innerHTML = `
+      <div class="p-4 bg-yellow-100 rounded-xl mb-6">
+        <h2 class="font-bold text-yellow-800">📊 全班統計總表</h2>
+        ${Object.entries(summary).map(([item, data]) => `
+          <div class="flex justify-between py-2 border-b border-yellow-200">
+            <span>${item} x ${data.qty}</span>
+            <span class="font-bold">$${data.total}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="space-y-4">
+        ${state.orders.map(o => `
+          <div class="p-4 bg-white rounded-xl shadow flex justify-between items-center">
+            <div>
+              <div class="font-bold">${o.name} - ${o.item} ($${o.price})</div>
+              <div class="text-sm text-gray-500">份數: ${o.qty}</div>
+            </div>
+            <input type="checkbox" ${o.paid ? 'checked' : ''} class="w-6 h-6" onclick="togglePaid('${o.id}', ${o.paid})">
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  window.togglePaid = async (id, currentStatus) => {
+    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', `orders_${state.date}`, id), { paid: !currentStatus });
+  };
+</script>
 </body>
 </html>
